@@ -15,10 +15,10 @@
 using System;
 namespace MCGalaxy.SQL
 {
-    public sealed class SqlTransaction : IDisposable
+    public class SqlTransaction : IDisposable
     {
-        internal SQLiteConnection conn;
-        internal SQLiteTransaction transaction;
+        public SQLiteConnection conn;
+        public SQLiteTransaction transaction;
         public SqlTransaction()
         {
             conn = new();

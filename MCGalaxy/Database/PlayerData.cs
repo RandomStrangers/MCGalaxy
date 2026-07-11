@@ -40,7 +40,7 @@ namespace MCGalaxy.DB
         public int DatabaseID, Money, Deaths, Logins, Kicks, Messages;
         public long TotalModified, TotalDrawn, TotalPlaced, TotalDeleted;
         public TimeSpan TotalTime;
-        internal static void Create(Player p)
+        public static void Create(Player p)
         {
             p.prefix = "";
             p.SetColor(p.group.Color);
@@ -77,7 +77,7 @@ namespace MCGalaxy.DB
             p.money = Money;
             p.TimesBeenKicked = Kicks;
         }
-        internal static PlayerData Parse(ISqlRecord record)
+        public static PlayerData Parse(ISqlRecord record)
         {
             PlayerData data = new()
             {
@@ -113,14 +113,14 @@ namespace MCGalaxy.DB
             data.TotalDeleted = UnpackHi(drawn);
             return data;
         }
-        internal static long ParseLong(string value) => (value.Length == 0 || value.CaselessEq("null")) ? 0 : long.Parse(value);
-        internal static string ParseColor(string raw)
+        public static long ParseLong(string value) => (value.Length == 0 || value.CaselessEq("null")) ? 0 : long.Parse(value);
+        public static string ParseColor(string raw)
         {
             if (raw.Length == 0) return raw;
             string col = Colors.Parse(raw);
             return col.Length > 0 ? col : Colors.Name(raw).Length == 0 ? "" : raw;
         }
-        static DateTime ParseDateTime(ISqlRecord record, string name)
+        public static DateTime ParseDateTime(ISqlRecord record, string name)
         {
             int i = record.GetOrdinal(name);
             string raw = record.GetStringValue(i);
@@ -135,8 +135,8 @@ namespace MCGalaxy.DB
                 return DateTime.MinValue;
             }
         }
-        internal static long UnpackHi(long value) => (value >> 38) & ((1L << 26) - 1);
-        internal static long UnpackLo(long value) => value & ((1L << 38) - 1);
-        internal static long Pack(long hi, long lo) => hi << 38 | lo;
+        public static long UnpackHi(long value) => (value >> 38) & ((1L << 26) - 1);
+        public static long UnpackLo(long value) => value & ((1L << 38) - 1);
+        public static long Pack(long hi, long lo) => hi << 38 | lo;
     }
 }

@@ -20,8 +20,8 @@ namespace MCGalaxy.DB
     /// <summary> Stores per-player persistent data. </summary>
     public static class PlayerDB
     {
-        static string LoginPath(string name) => "text/login/" + name.ToLower() + ".txt";
-        static string LogoutPath(string name) => "text/logout/" + name.ToLower() + ".txt";
+        public static string LoginPath(string name) => "text/login/" + name.ToLower() + ".txt";
+        public static string LogoutPath(string name) => "text/logout/" + name.ToLower() + ".txt";
         public static string LoadNick(string name)
         {
             string path = "players/" + name + "DB.txt";
@@ -53,7 +53,7 @@ namespace MCGalaxy.DB
             path = "text/logout/" + name + ".txt";
             return File.Exists(path) ? FileIO.TryReadAllText(path) : "";
         }
-        static void SetMessage(string path, string msg)
+        public static void SetMessage(string path, string msg)
         {
             EnsureDirectoriesExist();
             switch (msg.Length)
@@ -88,7 +88,7 @@ namespace MCGalaxy.DB
         public static PlayerData Match(Player p, string name) => Matcher.Find(p, name, out int matches, MatchMulti(name, "*", PlayerData.Parse),
                                 null, stat => stat.Name, "players", 20);
         public delegate T RecordParser<T>(ISqlRecord record);
-        static List<T> MatchMulti<T>(string name, string columns, RecordParser<T> parseRecord) where T : class
+        public static List<T> MatchMulti<T>(string name, string columns, RecordParser<T> parseRecord) where T : class
         {
             List<T> list = FindPartial(name, columns, parseRecord);
             if (list.Count < 25) return list;

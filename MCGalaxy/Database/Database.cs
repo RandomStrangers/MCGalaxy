@@ -42,7 +42,7 @@ namespace MCGalaxy.SQL
                     modifier, args);
             return value;
         }
-        internal static string[] ParseFields(ISqlRecord record)
+        public static string[] ParseFields(ISqlRecord record)
         {
             string[] field = new string[record.FieldCount];
             for (int i = 0; i < field.Length; i++)
@@ -150,7 +150,7 @@ namespace MCGalaxy.SQL
         public static int Execute(string sql, params object[] args) => Do(sql, null, args);
         /// <summary> Executes an SQL query, invoking callback function on each returned row. </summary>
         public static int Iterate(string sql, ReaderCallback callback, params object[] args) => Do(sql, callback, args);
-        internal static int Do(string sql, ReaderCallback callback, object[] args)
+        public static int Do(string sql, ReaderCallback callback, object[] args)
         {
             SQLiteBackend db = new();
             Exception e = null;
@@ -167,8 +167,7 @@ namespace MCGalaxy.SQL
             return 0;
         }
         #endregion
-
-        internal static TimeSpan ParseOldDBTimeSpent(string value)
+        public static TimeSpan ParseOldDBTimeSpent(string value)
         {
             string[] parts = value.SplitSpaces();
             int days = NumberUtils.ParseInt32(parts[0]),

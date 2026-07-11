@@ -85,7 +85,7 @@ namespace MCGalaxy.SQL
     }
     public class SQLiteConnection : IDisposable
     {
-        internal int _transactionLevel;
+        public int _transactionLevel;
         public IntPtr handle;
         public SQLiteTransaction BeginTransaction() => new(this);
         public SQLiteCommand CreateCommand(string sql) => new(sql, this);
@@ -93,8 +93,8 @@ namespace MCGalaxy.SQL
         public bool AutoCommit => handle == IntPtr.Zero
                     ? throw new InvalidOperationException("Database connection closed")
                     : Interop.sqlite3_get_autocommit(handle) == 1;
-        internal string GetLastError() => handle == IntPtr.Zero ? "database connection closed" : SQLiteConvert.FromUTF8(Interop.sqlite3_errmsg(handle), -1);
-        internal SQLiteStatement Prepare(string strSql, ref string strRemain)
+        public string GetLastError() => handle == IntPtr.Zero ? "database connection closed" : SQLiteConvert.FromUTF8(Interop.sqlite3_errmsg(handle), -1);
+        public SQLiteStatement Prepare(string strSql, ref string strRemain)
         {
             byte[] b = SQLiteConvert.ToUTF8(strSql);
             uint start = (uint)Environment.TickCount;
@@ -102,19 +102,18 @@ namespace MCGalaxy.SQL
             {
                 IntPtr stmt = IntPtr.Zero, ptr = IntPtr.Zero;
                 SQLiteErrorCode n = Interop.sqlite3_prepare_v2(handle, b, b.Length - 1, ref stmt, ref ptr);
-                if (n == SQLiteErrorCodes.Ok)
+                switch (n)
                 {
-                    strRemain = SQLiteConvert.FromUTF8(ptr, -1);
-                    return stmt != IntPtr.Zero ? new SQLiteStatement(this, stmt) : null;
-                }
-                else if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
-                {
-                    SQLiteConvert.TrySleep(this, n, start);
-                    if (stmt != IntPtr.Zero) Interop.sqlite3_finalize(stmt);
-                }
-                else
-                {
-                    throw new SQLiteException(n, GetLastError());
+                    case SQLiteErrorCodes.Ok:
+                        strRemain = SQLiteConvert.FromUTF8(ptr, -1);
+                        return stmt != IntPtr.Zero ? new SQLiteStatement(this, stmt) : null;
+                    case SQLiteErrorCodes.Locked:
+                    case SQLiteErrorCodes.Busy:
+                        SQLiteConvert.TrySleep(this, n, start);
+                        if (stmt != IntPtr.Zero) Interop.sqlite3_finalize(stmt);
+                        break;
+                    default:
+                        throw new SQLiteException(n, GetLastError());
                 }
             }
         }
@@ -139,20 +138,20 @@ namespace MCGalaxy.SQL
                 throw;
             }
         }
-        void SetTimeout(int timeoutMS)
+        public void SetTimeout(int timeoutMS)
         {
             if (handle == IntPtr.Zero) throw new SQLiteException("no connection handle available");
             SQLiteErrorCode n = Interop.sqlite3_busy_timeout(handle, timeoutMS);
             if (n != SQLiteErrorCodes.Ok) throw new SQLiteException(n, GetLastError());
         }
-        internal static void Check(SQLiteConnection connection)
+        public static void Check(SQLiteConnection connection)
         {
             if (connection == null)
                 throw new ArgumentNullException("connection");
             if (connection.handle == IntPtr.Zero)
                 throw new InvalidOperationException("The connection is not open.");
         }
-        internal bool Reset(bool canThrow)
+        public bool Reset(bool canThrow)
         {
             if (handle == IntPtr.Zero) return false;
             IntPtr stmt = IntPtr.Zero;
@@ -168,7 +167,7 @@ namespace MCGalaxy.SQL
         }
         public void Dispose() => Close(false);
         public void Close() => Close(true);
-        void Close(bool canThrow)
+        public void Close(bool canThrow)
         {
             if (handle == IntPtr.Zero) return;
             if (Server.Config.DatabasePooling)
@@ -184,20 +183,18 @@ namespace MCGalaxy.SQL
             handle = IntPtr.Zero;
             _transactionLevel = 0;
         }
-        static readonly Queue<IntPtr> pool = new();
-        static readonly object poolLocker = new();
-        static void LimitPool(int max)
+        public static readonly Queue<IntPtr> pool = new();
+        public static readonly object poolLocker = new();
+        public static void LimitPool(int max)
         {
             lock (poolLocker)
-            {
                 while (pool.Count > max)
                 {
                     IntPtr handle = pool.Dequeue();
                     Interop.sqlite3_close_v2(handle);
                 }
-            }
         }
-        static void AddToPool(IntPtr handle)
+        public static void AddToPool(IntPtr handle)
         {
             lock (poolLocker)
             {
@@ -205,27 +202,25 @@ namespace MCGalaxy.SQL
                 pool.Enqueue(handle);
             }
         }
-        static IntPtr RemoveFromPool()
+        public static IntPtr RemoveFromPool()
         {
             lock (poolLocker)
-            {
                 return pool.Count > 0 ? pool.Dequeue() : IntPtr.Zero;
-            }
         }
     }
-    public sealed class SQLiteCommand : IDisposable
+    public class SQLiteCommand : IDisposable
     {
-        string sqlCmd;
-        internal SQLiteConnection conn;
-        SQLiteStatement stmt;
-        readonly List<string> param_names = new();
-        readonly List<object> param_values = new();
+        public string sqlCmd;
+        public SQLiteConnection conn;
+        public SQLiteStatement stmt;
+        public readonly List<string> param_names = new();
+        public readonly List<object> param_values = new();
         public SQLiteCommand(string sql, SQLiteConnection connection)
         {
             sqlCmd = sql;
             conn = connection;
         }
-        void DisposeStatement()
+        public void DisposeStatement()
         {
             stmt?.Dispose();
             stmt = null;
@@ -238,7 +233,7 @@ namespace MCGalaxy.SQL
             sqlCmd = null;
             DisposeStatement();
         }
-        internal SQLiteStatement NextStatement()
+        public SQLiteStatement NextStatement()
         {
             if (stmt != null) DisposeStatement();
             if (string.IsNullOrEmpty(sqlCmd)) return null;
@@ -270,16 +265,18 @@ namespace MCGalaxy.SQL
         public int ExecuteNonQuery()
         {
             using ISqlReader reader = ExecuteReader();
-            while (reader.Read()) { }
+            while (reader.Read()) 
+            { 
+            }
             return reader.rowsAffected;
         }
     }
-    static class SQLiteConvert
+    public static class SQLiteConvert
     {
-        static readonly string[] _datetimeFormats = new string[] {
+        public static readonly string[] _datetimeFormats = new string[] {
             "yyyy-MM-dd HH:mm:ssK", "yyyy-MM-dd HH:mm:ss"
         };
-        static readonly Encoding utf8 = new UTF8Encoding();
+        public static readonly Encoding utf8 = new UTF8Encoding();
         public static byte[] ToUTF8(string text)
         {
             int count = utf8.GetByteCount(text) + 1;
@@ -294,10 +291,8 @@ namespace MCGalaxy.SQL
             if (len < 0)
             {
                 len = 0;
-                while (Marshal.ReadByte(ptr, len) != 0) 
-                {
-                    len++; 
-                }
+                while (Marshal.ReadByte(ptr, len) != 0)
+                    len++;
             }
             if (len == 0) return "";
             byte[] data = new byte[len];
@@ -308,13 +303,11 @@ namespace MCGalaxy.SQL
                 text, _datetimeFormats, DateTimeFormatInfo.InvariantInfo,
                 DateTimeStyles.None), DateTimeKind.Unspecified);
         public static string ToString(DateTime value) => value.ToString((value.Kind == DateTimeKind.Utc) ? "yyyy-MM-dd HH:mm:ssK" : "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-        static uint seed = 123456789;
-        internal static void TrySleep(SQLiteConnection conn, SQLiteErrorCode n, uint start)
+        public static uint seed = 123456789;
+        public static void TrySleep(SQLiteConnection conn, SQLiteErrorCode n, uint start)
         {
             if ((uint)Environment.TickCount > start + (30 * 1000))
-            {
                 throw new SQLiteException(n, conn.GetLastError());
-            }
             else
             {
                 seed = seed * 1103515245 + 12345;
@@ -322,7 +315,7 @@ namespace MCGalaxy.SQL
             }
         }
     }
-    enum TypeAffinity
+    public enum TypeAffinity
     {
         Uninitialized = 0,
         Int64 = 1,
@@ -331,13 +324,13 @@ namespace MCGalaxy.SQL
         Blob = 4,
         Null = 5,
     }
-    sealed class SQLiteException : ExternalException
+    public class SQLiteException : ExternalException
     {
         public SQLiteException(SQLiteErrorCode code, string message)
             : base(FormatError(code, message)) { }
         public SQLiteException(string message) : this(SQLiteErrorCodes.Unknown, message) { }
-        static string FormatError(SQLiteErrorCode code, string message) => (GetErrorString(code) + Environment.NewLine + message).Trim();
-        static readonly string[] errors = new string[] {
+        public static string FormatError(SQLiteErrorCode code, string message) => (GetErrorString(code) + Environment.NewLine + message).Trim();
+        public static readonly string[] errors = new string[] {
             /* SQLITE_OK          */ "not an error",
             /* SQLITE_ERROR       */ "SQL logic error or missing database",
             /* SQLITE_INTERNAL    */ "internal logic error",
@@ -368,26 +361,23 @@ namespace MCGalaxy.SQL
             /* SQLITE_NOTICE      */ "notification message",
             /* SQLITE_WARNING     */ "warning message"
         };
-        internal static string GetErrorString(SQLiteErrorCode rc)
+        public static string GetErrorString(SQLiteErrorCode rc)
         {
             try
             {
                 IntPtr ptr = Interop.sqlite3_errstr(rc);
                 if (ptr != IntPtr.Zero)
-                {
                     return Marshal.PtrToStringAnsi(ptr);
-                }
             }
             catch (EntryPointNotFoundException)
             {
-                // do nothing.
             }
             if (rc < 0 || rc >= errors.Length)
                 rc = SQLiteErrorCodes.Error;
             return errors[rc];
         }
     }
-    static class SQLiteErrorCodes
+    public static class SQLiteErrorCodes
     {
         public const int Unknown = -1;
         public const int Ok = 0;
@@ -397,12 +387,12 @@ namespace MCGalaxy.SQL
         public const int Row = 100;
         public const int Done = 101;
     }
-    sealed class SQLiteStatement : IDisposable
+    public class SQLiteStatement : IDisposable
     {
-        IntPtr handle;
-        internal SQLiteConnection conn;
-        string[] paramNames;
-        internal SQLiteStatement(SQLiteConnection connection, IntPtr handle)
+        public IntPtr handle;
+        public SQLiteConnection conn;
+        public string[] paramNames;
+        public SQLiteStatement(SQLiteConnection connection, IntPtr handle)
         {
             conn = connection;
             this.handle = handle;
@@ -425,30 +415,39 @@ namespace MCGalaxy.SQL
             paramNames = null;
             conn = null;
         }
-        internal bool Step()
+        public bool Step()
         {
             uint start = (uint)Environment.TickCount;
             while (true)
             {
                 SQLiteErrorCode n = Interop.sqlite3_step(handle);
-                if (n == SQLiteErrorCodes.Row) return true;
-                if (n == SQLiteErrorCodes.Done) return false;
-                if (n == SQLiteErrorCodes.Ok) continue;
-                n = Interop.sqlite3_reset(handle);
-                if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
+                switch (n)
                 {
-                    SQLiteConvert.TrySleep(conn, n, start);
+                    case SQLiteErrorCodes.Row:
+                        return true;
+                    case SQLiteErrorCodes.Done:
+                        return false;
+                    case SQLiteErrorCodes.Ok:
+                        continue;
                 }
-                else if (n != SQLiteErrorCodes.Ok)
+                n = Interop.sqlite3_reset(handle);
+                switch (n)
                 {
-                    throw new SQLiteException(n, conn.GetLastError());
+                    case SQLiteErrorCodes.Locked:
+                    case SQLiteErrorCodes.Busy:
+                        SQLiteConvert.TrySleep(conn, n, start);
+                        break;
+                    default:
+                        if (n != SQLiteErrorCodes.Ok)
+                            throw new SQLiteException(n, conn.GetLastError());
+                        break;
                 }
             }
         }
-        internal int ColumnCount() => Interop.sqlite3_column_count(handle);
-        internal string ColumnName(int index) => SQLiteConvert.FromUTF8(Interop.sqlite3_column_name(handle, index), -1);
-        internal TypeAffinity ColumnAffinity(int index) => Interop.sqlite3_column_type(handle, index);
-        internal void BindAll(List<string> names, List<object> values)
+        public int ColumnCount() => Interop.sqlite3_column_count(handle);
+        public string ColumnName(int index) => SQLiteConvert.FromUTF8(Interop.sqlite3_column_name(handle, index), -1);
+        public TypeAffinity ColumnAffinity(int index) => Interop.sqlite3_column_type(handle, index);
+        public void BindAll(List<string> names, List<object> values)
         {
             if (paramNames == null || names.Count == 0) return;
             for (int idx = 0; idx < names.Count; idx++)
@@ -459,21 +458,17 @@ namespace MCGalaxy.SQL
                 if (n != SQLiteErrorCodes.Ok) throw new SQLiteException(n, conn.GetLastError());
             }
         }
-        int FindParameter(string name)
+        public int FindParameter(string name)
         {
             int count = paramNames.Length;
             for (int i = 0; i < count; i++)
-            {
                 if (name.Equals(paramNames[i], StringComparison.OrdinalIgnoreCase)) return i;
-            }
             return -1;
         }
-        SQLiteErrorCode BindParameter(int i, object obj)
+        public SQLiteErrorCode BindParameter(int i, object obj)
         {
             if (obj == null || obj == DBNull.Value)
-            {
                 return Interop.sqlite3_bind_null(handle, i);
-            }
             Type t = obj.GetType();
             TypeCode tc = Type.GetTypeCode(t);
             if (tc == TypeCode.Object && t == typeof(byte[]))
@@ -497,11 +492,11 @@ namespace MCGalaxy.SQL
                 _ => Bind_Text(i, obj.ToString()),
             };
         }
-        SQLiteErrorCode Bind_Int32(int index, int value) => Interop.sqlite3_bind_int(handle, index, value);
-        SQLiteErrorCode Bind_Int64(int index, long value) => Interop.sqlite3_bind_int64(handle, index, value);
-        SQLiteErrorCode Bind_Text(int index, string value) => Interop.sqlite3_bind_text(handle, index, SQLiteConvert.ToUTF8(value), SQLiteConvert.ToUTF8(value).Length - 1, (IntPtr)(-1));
-        SQLiteErrorCode Bind_DateTime(int index, DateTime dt) => Bind_Text(index, SQLiteConvert.ToString(dt));
-        internal object GetValue(int index, TypeAffinity affinity) => affinity switch
+        public SQLiteErrorCode Bind_Int32(int index, int value) => Interop.sqlite3_bind_int(handle, index, value);
+        public SQLiteErrorCode Bind_Int64(int index, long value) => Interop.sqlite3_bind_int64(handle, index, value);
+        public SQLiteErrorCode Bind_Text(int index, string value) => Interop.sqlite3_bind_text(handle, index, SQLiteConvert.ToUTF8(value), SQLiteConvert.ToUTF8(value).Length - 1, (IntPtr)(-1));
+        public SQLiteErrorCode Bind_DateTime(int index, DateTime dt) => Bind_Text(index, SQLiteConvert.ToString(dt));
+        public object GetValue(int index, TypeAffinity affinity) => affinity switch
         {
             TypeAffinity.Blob => GetBytes(index),
             TypeAffinity.Double => GetDouble(index),
@@ -509,13 +504,13 @@ namespace MCGalaxy.SQL
             TypeAffinity.Null => DBNull.Value,
             _ => GetText(index),
         };
-        internal double GetDouble(int index) => Interop.sqlite3_column_double(handle, index);
-        internal int GetInt32(int index) => Interop.sqlite3_column_int(handle, index);
-        internal long GetInt64(int index) => Interop.sqlite3_column_int64(handle, index);
-        internal string GetText(int index) => SQLiteConvert.FromUTF8(Interop.sqlite3_column_text(handle, index),
+        public double GetDouble(int index) => Interop.sqlite3_column_double(handle, index);
+        public int GetInt32(int index) => Interop.sqlite3_column_int(handle, index);
+        public long GetInt64(int index) => Interop.sqlite3_column_int64(handle, index);
+        public string GetText(int index) => SQLiteConvert.FromUTF8(Interop.sqlite3_column_text(handle, index),
                                           Interop.sqlite3_column_bytes(handle, index));
-        internal DateTime GetDateTime(int index) => SQLiteConvert.ToDateTime(GetText(index));
-        internal byte[] GetBytes(int index)
+        public DateTime GetDateTime(int index) => SQLiteConvert.ToDateTime(GetText(index));
+        public byte[] GetBytes(int index)
         {
             int srcLen = Interop.sqlite3_column_bytes(handle, index);
             if (srcLen <= 0) return null;
@@ -527,8 +522,8 @@ namespace MCGalaxy.SQL
     }
     public class SQLiteTransaction
     {
-        SQLiteConnection conn;
-        internal SQLiteTransaction(SQLiteConnection connection)
+        public SQLiteConnection conn;
+        public SQLiteTransaction(SQLiteConnection connection)
         {
             conn = connection;
             if (conn._transactionLevel++ == 0)
@@ -546,7 +541,7 @@ namespace MCGalaxy.SQL
                 }
             }
         }
-        bool disposed;
+        public bool disposed;
         public void Dispose()
         {
             if (disposed) return;
@@ -570,7 +565,7 @@ namespace MCGalaxy.SQL
             IsValid(true);
             IssueRollback(true);
         }
-        void IssueRollback(bool throwError)
+        public void IssueRollback(bool throwError)
         {
             if (conn == null) return;
             try
@@ -584,16 +579,12 @@ namespace MCGalaxy.SQL
             }
             conn._transactionLevel = 0;
         }
-        bool IsValid(bool throwError)
+        public bool IsValid(bool throwError)
         {
             if (conn == null)
-            {
                 return throwError ? throw new ArgumentNullException("No connection associated with this transaction") : false;
-            }
             if (conn.handle == IntPtr.Zero)
-            {
                 return throwError ? throw new SQLiteException("Connection was closed") : false;
-            }
             if (conn._transactionLevel == 0 || conn.AutoCommit)
             {
                 conn._transactionLevel = 0;

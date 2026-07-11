@@ -38,7 +38,7 @@ namespace MCGalaxy.SQL
         public string FormatType() => Type == ColumnType.Char
                 ? "CHAR(" + MaxLength + ")"
                 : Type == ColumnType.VarChar ? "VARCHAR(" + MaxLength + ")" : colTypes[(int)Type];
-        static readonly string[] colTypes = new string[] {
+        public static readonly string[] colTypes = new string[] {
             "TINYINT UNSIGNED", "SMALLINT UNSIGNED", "MEDIUMINT UNSIGNED", "INT UNSIGNED", "BIGINT UNSIGNED",
             "TINYINT", "SMALLINT", "MEDIUMINT", "INT", "BIGINT",
             "INTEGER", "DATETIME",

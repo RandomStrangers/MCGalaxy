@@ -79,7 +79,7 @@ namespace MCGalaxy.DB
             }
         }
         public long CountEntries(Stream s) => (s.Length / 16) - 1;
-        static void WriteEntry(BlockDBEntry entry, byte[] bulk, int index)
+        public static void WriteEntry(BlockDBEntry entry, byte[] bulk, int index)
         {
             bulk[index + 0] = (byte)entry.PlayerID;
             bulk[index + 1] = (byte)(entry.PlayerID >> 8);
@@ -227,8 +227,8 @@ namespace MCGalaxy.DB
             }
             return false;
         }
-        static ushort ReadU16(byte[] array, int offset) => (ushort)(array[offset] | array[offset + 1] << 8);
-        static void WriteU16(ushort value, byte[] array, int index)
+        public static ushort ReadU16(byte[] array, int offset) => (ushort)(array[offset] | array[offset + 1] << 8);
+        public static void WriteU16(ushort value, byte[] array, int index)
         {
             array[index++] = (byte)value;
             array[index++] = (byte)(value >> 8);

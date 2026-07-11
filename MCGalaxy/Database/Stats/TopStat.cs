@@ -45,7 +45,7 @@ namespace MCGalaxy.DB
             return null;
         }
         public static void List(Player p) => p.Message("&f" + stats.Join(stat => stat.Identifier));
-        static readonly List<TopStat> stats = new() {
+        public static readonly List<TopStat> stats = new() {
             new DBTopStat("Logins", "Most logins", "Players",
                         PlayerData.ColumnLogins, FormatInteger),
             new DBTopStat("Deaths", "Most deaths", "Players",
@@ -104,7 +104,7 @@ namespace MCGalaxy.DB
                               "ORDER BY" + OrderBy + limit);
             return stats;
         }
-        static TopResult ParseRow(ISqlRecord record) => new()
+        public static TopResult ParseRow(ISqlRecord record) => new()
         {
             Name = record.GetStringValue(0),
             Value = record.GetStringValue(1)

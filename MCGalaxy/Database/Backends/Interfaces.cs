@@ -18,12 +18,12 @@ namespace MCGalaxy.SQL
     /// <summary> Abstracts iterating over the results from executing a SQL command </summary>
     public class ISqlReader : ISqlRecord, IDisposable
     {
-        SQLiteCommand _command;
-        SQLiteStatement stmt;
-        int readState, columns;
+        public SQLiteCommand _command;
+        public SQLiteStatement stmt;
+        public int readState, columns;
         public int rowsAffected;
-        string[] fieldNames;
-        internal ISqlReader(SQLiteCommand cmd) => _command = cmd;
+        public string[] fieldNames;
+        public ISqlReader(SQLiteCommand cmd) => _command = cmd;
         public void Dispose() => Close();
         public void Close()
         {
@@ -31,18 +31,18 @@ namespace MCGalaxy.SQL
             stmt = null;
             fieldNames = null;
         }
-        void CheckClosed()
+        public void CheckClosed()
         {
             if (_command == null)
                 throw new InvalidOperationException("DataReader has been closed");
             SQLiteConnection.Check(_command.conn);
         }
-        void VerifyForGet()
+        public void VerifyForGet()
         {
             CheckClosed();
             if (readState != 0) throw new InvalidOperationException("No current row");
         }
-        TypeAffinity GetAffinity(int i)
+        public TypeAffinity GetAffinity(int i)
         {
             VerifyForGet();
             return stmt.ColumnAffinity(i);
@@ -90,9 +90,7 @@ namespace MCGalaxy.SQL
                 if (stmt == null) return false;
                 columns = stmt.ColumnCount();
                 if (stmt.Step())
-                {
                     readState = -1;
-                }
                 else if (columns == 0)
                 {
                     rowsAffected += stmt.conn.Changes;

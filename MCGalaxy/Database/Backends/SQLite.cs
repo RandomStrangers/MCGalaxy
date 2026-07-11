@@ -24,7 +24,7 @@ namespace MCGalaxy.SQL
     public class SQLiteBackend
     {
         public static SQLiteBackend Instance = new();
-        protected static List<string> GetStrings(string sql, params object[] args)
+        public static List<string> GetStrings(string sql, params object[] args)
         {
             List<string> values = new();
             Database.Iterate(sql,
@@ -65,7 +65,7 @@ namespace MCGalaxy.SQL
         }
         /// <summary> Returns SQL for adding a row to the given table. </summary>
         public string AddRowSql(string table, string columns, int numArgs) => InsertSql("INSERT INTO", table, columns, numArgs);
-        protected string InsertSql(string cmd, string table, string columns, int numArgs)
+        public string InsertSql(string cmd, string table, string columns, int numArgs)
         {
             StringBuilder sql = new(cmd);
             sql.Append(" `").Append(table).Append("` ");
@@ -128,8 +128,8 @@ namespace MCGalaxy.SQL
                 cmd.AddParameter(names[i], parameters[i]);
             }
         }
-        static volatile string[] ids;
-        internal static string[] GetNames(int count)
+        public static volatile string[] ids;
+        public static string[] GetNames(int count)
         {
             string[] names = ids;
             if (names == null || count > names.Length)
@@ -144,7 +144,7 @@ namespace MCGalaxy.SQL
             return names;
         }
         #endregion
-        static void CheckFile(string file)
+        public static void CheckFile(string file)
         {
             if (!File.Exists(file))
             {
@@ -186,9 +186,7 @@ namespace MCGalaxy.SQL
         {
             List<string> tables = GetStrings("SELECT name from sqlite_master WHERE type='table'");
             for (int i = tables.Count - 1; i >= 0; i--)
-            {
                 if (tables[i].StartsWith("sqlite_")) tables.RemoveAt(i);
-            }
             return tables;
         }
         public List<string> ColumnNames(string table)
@@ -200,7 +198,7 @@ namespace MCGalaxy.SQL
             return columns;
         }
         public string RenameTableSql(string srcTable, string dstTable) => "ALTER TABLE `" + srcTable + "` RENAME TO `" + dstTable + "`";
-        protected void CreateTableColumns(StringBuilder sql, ColumnDesc[] columns)
+        public void CreateTableColumns(StringBuilder sql, ColumnDesc[] columns)
         {
             string priKey = null;
             for (int i = 0; i < columns.Length; i++)
@@ -216,13 +214,9 @@ namespace MCGalaxy.SQL
                 if (col.AutoIncrement) sql.Append(" AUTOINCREMENT");
                 if (col.NotNull) sql.Append(" NOT NULL");
                 if (i < columns.Length - 1)
-                {
                     sql.Append(',');
-                }
                 else if (priKey != null)
-                {
                     sql.Append(", PRIMARY KEY(").Append(priKey).Append(") ");
-                }
                 sql.AppendLine();
             }
         }

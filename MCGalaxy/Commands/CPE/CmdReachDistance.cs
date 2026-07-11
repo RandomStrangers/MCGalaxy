@@ -21,6 +21,7 @@ namespace MCGalaxy.Commands.CPE
         public override string Type => CommandTypes.Building;
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

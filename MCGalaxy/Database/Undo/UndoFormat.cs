@@ -15,7 +15,7 @@
 using System;
 namespace MCGalaxy.Undo
 {
-    public sealed class UndoDrawOpEntry
+    public class UndoDrawOpEntry
     {
         public string DrawOpName, LevelName;
         public DateTime Start, End;

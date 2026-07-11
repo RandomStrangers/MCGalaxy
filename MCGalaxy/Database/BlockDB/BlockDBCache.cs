@@ -17,7 +17,7 @@ using System;
 namespace MCGalaxy.DB
 {
     /// <summary> Optimised in-memory BlockDB cache. </summary>
-    public sealed class BlockDBCache
+    public class BlockDBCache
     {
         public BlockDBCacheNode Tail, Head;
         /// <summary> Used to synchronise adding to Cache by multiple threads. </summary>
@@ -79,7 +79,7 @@ namespace MCGalaxy.DB
                 Tail = null;
             }
         }
-        void AddNextNode()
+        public void AddNextNode()
         {
             BlockDBCacheNode newHead = new(nextSize)
             {
@@ -92,9 +92,9 @@ namespace MCGalaxy.DB
             if (nextSize == 20 * 1000) nextSize = 50 * 1000;
             if (nextSize == 10 * 1000) nextSize = 20 * 1000;
         }
-        int nextSize = 10 * 1000;
+        public int nextSize = 10 * 1000;
     }
-    public sealed class BlockDBCacheNode
+    public class BlockDBCacheNode
     {
         public BlockDBCacheNode Prev, Next;
         public int Count, BaseTimeDelta;

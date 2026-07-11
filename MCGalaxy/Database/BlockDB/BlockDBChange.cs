@@ -57,7 +57,7 @@ namespace MCGalaxy.DB
             p.Message("Portal destination: ({0}, {1}, {2}) in {3}",
                            exit.X, exit.Y, exit.Z, exit.Map);
         }
-        static string FormatReason(ushort flags)
+        public static string FormatReason(ushort flags)
         {
             if ((flags & BlockDBFlags.Painted) != 0) return " (Painted)";
             if ((flags & BlockDBFlags.Drawn) != 0) return " (Drawn)";

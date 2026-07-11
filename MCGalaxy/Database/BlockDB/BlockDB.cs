@@ -19,7 +19,7 @@ using System;
 using System.IO;
 namespace MCGalaxy.DB
 {
-    public sealed unsafe class BlockDB
+    public unsafe class BlockDB
     {
         /// <summary> Dimensions used to pack coordinates into an index. </summary>
         /// <remarks> May be different from actual level's dimensions, such as when the level has been resized. </remarks>
@@ -45,7 +45,7 @@ namespace MCGalaxy.DB
             if (Dims.Z < lvl.Length) Dims.Z = lvl.Length;
             Cache.Dims = Dims;
         }
-        void ReadDimensions()
+        public void ReadDimensions()
         {
             if (!File.Exists(FilePath)) return;
             using Stream s = OpenRead(FilePath);
@@ -91,7 +91,7 @@ namespace MCGalaxy.DB
             }
             FindInMemoryAt(x, y, z, output);
         }
-        void FindInMemoryAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output)
+        public void FindInMemoryAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output)
         {
             int index = (y * Dims.Z + z) * Dims.X + x;
             BlockDBCacheNode node = Cache.Tail;
@@ -124,7 +124,7 @@ namespace MCGalaxy.DB
             BlockDBFile format = BlockDBFile.ReadHeader(s, out dims);
             return format.FindChangesBy(s, ids, startDelta, endDelta, output);
         }
-        bool FindInMemoryBy(int[] ids, int startDelta, int endDelta, Action<BlockDBEntry> output)
+        public bool FindInMemoryBy(int[] ids, int startDelta, int endDelta, Action<BlockDBEntry> output)
         {
             BlockDBCacheNode node = Cache.Head;
             while (node != null)
@@ -147,7 +147,7 @@ namespace MCGalaxy.DB
             }
             return false;
         }
-        static int ClampDelta(TimeSpan delta) => ((long)delta.TotalSeconds) < int.MinValue ? int.MinValue : ((long)delta.TotalSeconds) > int.MaxValue ? int.MaxValue : (int)delta.TotalSeconds;
+        public static int ClampDelta(TimeSpan delta) => ((long)delta.TotalSeconds) < int.MinValue ? int.MinValue : ((long)delta.TotalSeconds) > int.MaxValue ? int.MaxValue : (int)delta.TotalSeconds;
         /// <summary> Deletes the backing file on disc if it exists. </summary>
         public void DeleteBackingFile()
         {
@@ -156,7 +156,7 @@ namespace MCGalaxy.DB
         }
         /// <summary> Checks if the backing file exists on disc, and if not, creates it.
         /// Also recreates the backing file if dimensions on disc are less than those in memory. </summary>
-        BlockDBFile ValidateBackingFile(string path)
+        public BlockDBFile ValidateBackingFile(string path)
         {
             BlockDBFile format = new();
             Vec3U16 fileDims;
@@ -179,7 +179,7 @@ namespace MCGalaxy.DB
             }
             return format;
         }
-        static FileStream OpenWrite(string path) => new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-        static FileStream OpenRead(string path) => new(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
+        public static FileStream OpenWrite(string path) => new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+        public static FileStream OpenRead(string path) => new(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
     }
 }
