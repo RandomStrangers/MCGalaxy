@@ -15,9 +15,9 @@
 using MCGalaxy.Commands.Chatting;
 namespace MCGalaxy.Core
 {
-    internal static class ChatHandler
+    public static class ChatHandler
     {
-        internal static void HandleOnChat(ChatScope scope, Player source, ref string msg,
+        public static void HandleOnChat(ChatScope scope, Player source, ref string msg,
                                           object _, ref ChatMessageFilter __, bool ___)
         {
             string text = msg.Replace("λFULL", source.name).Replace("λNICK", source.name);
@@ -33,8 +33,14 @@ namespace MCGalaxy.Core
             }
             if (scope != ChatScope.PM) Logger.Log(logType, text);
         }
-        internal static void HandleCommand(Player p, string cmd, string _, CommandData __)
+        public static void HandleCommand(Player p, string cmd, string _, CommandData __)
         {
+            string ponyName = p.Pronouns.ThirdPersonObjectiveSingular.ToLower() switch
+            {
+                "him" => "Brony",
+                "her" => "Pegasister",
+                _ => "Pony"
+            };
             if (Server.Config.CoreSecretCommands) switch (cmd)
                 {
                     case "pony":
@@ -45,11 +51,11 @@ namespace MCGalaxy.Core
                             switch (used)
                             {
                                 case < 2:
-                                    Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud brony! Everyone give λNICK &Sa brohoof!", null, Server.Config.RelayCommands);
+                                    Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud " + ponyName + "! Everyone give " + p.Pronouns.ThirdPersonObjectiveSingular + " &Sa brohoof!", null, Server.Config.RelayCommands);
                                     Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
                                     break;
                                 default:
-                                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, Brony!");
+                                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, {0}!", ponyName);
                                     break;
                             }
                             p.Extras["MCG_PONY"] = used + 1;
@@ -67,7 +73,7 @@ namespace MCGalaxy.Core
                                     Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
                                     break;
                                 default:
-                                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, Brony!");
+                                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, {0}!", ponyName);
                                     break;
                             }
                             p.Extras["MCG_RD"] = used + 1;
