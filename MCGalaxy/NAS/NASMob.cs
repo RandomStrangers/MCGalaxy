@@ -530,11 +530,42 @@ namespace MCGalaxy
                     damage = 5;
                     break;
             }
-            NASPlayer np = NASPlayer.GetPlayer(p);
-            if (np == null) return;
-            np.TakeDamage(damage, NASDamageSource.Entity);
-            if (np.HP <= 0)
-                np.Die("@p &8" + p.Pronouns.PastVerb + "&8 slain by " + bot.Model + ".");
+            try
+            {
+                NASPlayer np = NASPlayer.GetPlayer(p);
+                if (np == null) return;
+                np.TakeDamage(damage, NASDamageSource.Entity);
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    NASPlayer np = NASPlayer.GetPlayer(p);
+                    if (np != null && np.HP <= 0)
+                        np.Die("@p &8" + p.Pronouns.PastVerb + "&8 slain by " + bot.Model + ".");
+                    Logger.Log(LogType.Warning, "Error while damaging player: " + ex.Message);
+                }
+                catch (Exception e)
+                {
+                    Logger.Log(LogType.Error, "Failsfafe error while damaging player: " + e.Message);
+                    try
+                    {
+                        NASPlayer np = NASPlayer.GetPlayer(p);
+                        if (np != null)
+                        {
+                            np.nl = NASLevel.Get(p.Level.name);
+                            byte yaw = np.p.Rot.RotY, pitch = np.p.Rot.HeadX;
+                            Position pos = np.p.Pos;
+                            np.SpawnPlayer(p.Level, ref pos, ref yaw, ref pitch);
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        Logger.Log(LogType.Error, "Failsafe error while respawning player: " + ex2.Message);
+                        p.Kick("Fatal error. Please alert {0} on Discord", NAS.DiscordAccountName);
+                    }
+                }
+            }
         }
         public readonly Random _random = new();
         public int RandomNumber(int min, int max) => _random.Next(min, max);

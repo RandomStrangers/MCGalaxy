@@ -319,7 +319,12 @@ namespace MCGalaxy
                 p.Extras[NAS.PlayerKey] = np;
                 return np;
             }
-            return (NASPlayer)p.Extras[NAS.PlayerKey];
+            if (p.Extras.Contains(NAS.PlayerKey))
+            {
+                NASPlayer np = (NASPlayer)p.Extras[NAS.PlayerKey];
+                if (np != null) return np;
+            }
+            throw new("NASPlayer.GetPlayer: Player " + p.name + " has no NASPlayer instance.");
         }
         public bool CanDamage() => !p.invincible && !p.Game.Referee && pvpEnabled;
         public NASPlayer(Player p)
