@@ -328,6 +328,7 @@ namespace MCGalaxy
                             break;
                     }
                 NASPlayer np = NASPlayer.GetPlayer(p);
+                if (np == null) return;
                 float added = 0;
                 if (np.inventory.HeldItem.Enchant("Sharpness") != 0)
                     added += 1;
@@ -447,6 +448,7 @@ namespace MCGalaxy
                 foreach (Player p in players)
                 {
                     NASPlayer np = NASPlayer.GetPlayer(p);
+                    if (np == null) continue;
                     if (p.Level != bot.Level) continue;
                     int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z,
                         playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
@@ -529,7 +531,10 @@ namespace MCGalaxy
                     break;
             }
             NASPlayer np = NASPlayer.GetPlayer(p);
+            if (np == null) return;
             np.TakeDamage(damage, NASDamageSource.Entity);
+            if (np.HP <= 0)
+                np.Die("@p &8" + p.Pronouns.PastVerb + "&8 slain by " + bot.Model + ".");
         }
         public readonly Random _random = new();
         public int RandomNumber(int min, int max) => _random.Next(min, max);

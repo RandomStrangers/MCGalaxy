@@ -227,7 +227,7 @@ namespace MCGalaxy
         [JsonIgnore] public NASLevel nl;
         public bool holdingBreath = false;
         public virtual bool CanTakeDamage(NASDamageSource source) => true;
-        public virtual bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "") => !CanTakeDamage(source) && false;
+        public virtual bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "") => false;
     }
     public partial class NASPlayer : NASEntity
     {
