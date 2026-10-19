@@ -220,7 +220,7 @@ namespace MCGalaxy
     }
     public enum NASDamageSource
     {
-        Falling, Suffocating, Drowning, Entity, None, Murder
+        Falling, Suffocating, Drowning, Entity, None, Murder, Mob
     }
     public class NASEntity
     {
@@ -660,6 +660,7 @@ namespace MCGalaxy
             NASDamageSource.Drowning => "@p &rdrowned.",
             NASDamageSource.None => "@p &adied from unknown causes.",
             NASDamageSource.Murder => "@p &8" + p.Pronouns.PastVerb + "&8 murdered by &S@s",
+            NASDamageSource.Mob => "@p &8" + p.Pronouns.PastVerb + "&8 killed by a mob", //Default for now, will change later.
             _ => Enum.GetName(typeof(NASDamageSource), source).ToLower(),
         };
         public override bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "")

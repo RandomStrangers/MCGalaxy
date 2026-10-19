@@ -533,21 +533,23 @@ namespace MCGalaxy
             try
             {
                 NASPlayer np = NASPlayer.GetPlayer(p);
-                if (np == null) return;
-                np.TakeDamage(damage, NASDamageSource.Entity);
+                if (np != null && np.HP <= 0)
+                    np.Die("@p &8" + p.Pronouns.PastVerb + "&8 slain by " + bot.Model + ".");
+                else np?.TakeDamage(damage, NASDamageSource.Mob, "@p &8" + p.Pronouns.PastVerb + "&8 slain by " + bot.Model + ".");
             }
-            catch (Exception ex)
+            //Failsafe 1
+            catch
             {
                 try
                 {
                     NASPlayer np = NASPlayer.GetPlayer(p);
                     if (np != null && np.HP <= 0)
                         np.Die("@p &8" + p.Pronouns.PastVerb + "&8 slain by " + bot.Model + ".");
-                    Logger.Log(LogType.Warning, "Error while damaging player: " + ex.Message);
                 }
-                catch (Exception e)
+                //Failsafe 2
+                catch (Exception ex)
                 {
-                    Logger.Log(LogType.Error, "Failsfafe error while damaging player: " + e.Message);
+                    Logger.Log(LogType.Error, "Failsfafe error while damaging player: " + ex.Message);
                     try
                     {
                         NASPlayer np = NASPlayer.GetPlayer(p);
@@ -557,8 +559,10 @@ namespace MCGalaxy
                             byte yaw = np.p.Rot.RotY, pitch = np.p.Rot.HeadX;
                             Position pos = np.p.Pos;
                             np.SpawnPlayer(p.Level, ref pos, ref yaw, ref pitch);
+                            np.Message("A {0} attacked you, you have been respawned due to an error.", bot.Model);
                         }
                     }
+                    //Kick if both failsafes fail
                     catch (Exception ex2)
                     {
                         Logger.Log(LogType.Error, "Failsafe error while respawning player: " + ex2.Message);
